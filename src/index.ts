@@ -95,6 +95,36 @@ async function activate(context: vscode.ExtensionContext) {
       }
     })
   );
+
+  context.subscriptions.push(
+    vscode.languages.registerCompletionItemProvider(
+      [
+        { language: 'hubl', scheme: 'file' },
+        { language: 'hubl-html', scheme: 'file' },
+      ],
+      {
+        // eslint-disable-next-line no-unused-vars
+        provideCompletionItems(document, position, token, context) {
+          const linePrefix = document
+            .lineAt(position)
+            .text.substring(0, position.character);
+          if (!linePrefix.endsWith('sometesttext.')) {
+            return undefined;
+          }
+          let myitem = (text: string) => {
+            let item = new vscode.CompletionItem(
+              text,
+              vscode.CompletionItemKind.Text
+            );
+            item.range = new vscode.Range(position, position);
+            return item;
+          };
+          return [myitem('log'), myitem('warn'), myitem('error')];
+        },
+      },
+      '.' // trigger
+    )
+  );
 }
 
 module.exports = {
