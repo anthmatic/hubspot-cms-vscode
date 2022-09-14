@@ -15,7 +15,10 @@ const {
   EXTENSION_CONFIG_KEYS,
 } = require('./lib/constants');
 
+let logLine = vscode.window.createOutputChannel('testing');
+
 async function activate(context: vscode.ExtensionContext) {
+  logLine.appendLine(`Activation.`);
   const workspaceFolders = vscode.workspace.workspaceFolders;
 
   if (!workspaceFolders || workspaceFolders.length < 1) {
@@ -76,6 +79,7 @@ async function activate(context: vscode.ExtensionContext) {
 
   context.subscriptions.push(
     vscode.workspace.onDidChangeConfiguration(async (e) => {
+      logLine.appendLine(`Configuration changed.`);
       if (
         e.affectsConfiguration(
           `${EXTENSION_CONFIG_NAME}.${EXTENSION_CONFIG_KEYS.HUBL_LINTING}`
@@ -96,33 +100,67 @@ async function activate(context: vscode.ExtensionContext) {
     })
   );
 
+
+  // ==========================
+  //    Explore Week Testing
+  // ==========================
+
+  const fakeContext = {
+
+  }
+
+  // Format:
+  //
+  // [defaultTagName, tagProperties = {
+  //   property: defaultValue,
+  //   anotherProperty: anotherDefaultValue
+  // }]
+  const hublTags = {
+    ['blog_comments']: ['blog_comments', {
+      limit: 5000,
+      ['select_blog']: 'default',
+      ['skip_css']: false
+    }],
+    ['related_blog_posts']: [null, {
+      ['blog_ids']: null, // '1, 2'
+      ['blog_post_ids']:
+
+    }]
+  };
+
+  const consoleLogSuggestionHandler = {
+    provideCompletionItems(
+      document: vscode.TextDocument,
+      position: vscode.Position
+    ) {
+      logLine.appendLine('consoleLogSuggestionHandler');
+      // get all text until the `position` and check if it reads `console.`
+      // and if so then complete if `log`, `warn`, and `error`
+      const linePrefix = document
+        .lineAt(position)
+        .text.substr(0, position.character);
+      if (!linePrefix.endsWith('console.')) {
+        return undefined;
+      }
+
+      return [
+        new vscode.CompletionItem('log', vscode.CompletionItemKind.Method),
+        new vscode.CompletionItem('warn', vscode.CompletionItemKind.Method),
+        new vscode.CompletionItem('error', vscode.CompletionItemKind.Method),
+      ];
+    },
+  };
+
   context.subscriptions.push(
     vscode.languages.registerCompletionItemProvider(
-      [
-        { language: 'hubl', scheme: 'file' },
-        { language: 'hubl-html', scheme: 'file' },
-      ],
-      {
-        // eslint-disable-next-line no-unused-vars
-        provideCompletionItems(document, position, token, context) {
-          const linePrefix = document
-            .lineAt(position)
-            .text.substring(0, position.character);
-          if (!linePrefix.endsWith('sometesttext.')) {
-            return undefined;
-          }
-          let myitem = (text: string) => {
-            let item = new vscode.CompletionItem(
-              text,
-              vscode.CompletionItemKind.Text
-            );
-            item.range = new vscode.Range(position, position);
-            return item;
-          };
-          return [myitem('log'), myitem('warn'), myitem('error')];
-        },
-      },
-      '.' // trigger
+      'html-hubl',
+      consoleLogSuggestionHandler,
+      '.' // triggered whenever a '.' is being typed
+    ),
+    vscode.languages.registerCompletionItemProvider(
+      'plaintext',
+      consoleLogSuggestionHandler,
+      '.' // triggered whenever a '.' is being typed
     )
   );
 }
