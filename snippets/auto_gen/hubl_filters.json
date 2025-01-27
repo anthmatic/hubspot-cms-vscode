@@ -13,12 +13,33 @@
     "description": "adds a number to the existing value\nParameters:\n- addend(number) The number added to the base number",
     "prefix": "|add"
   },
+  "allow_snake_case": {
+    "body": [
+      "|allow_snake_case"
+    ],
+    "description": "Allow keys on the provided camelCase map to be accessed using snake_case",
+    "prefix": "|allow_snake_case"
+  },
   "attr": {
     "body": [
       "|attr('${1:name}')"
     ],
     "description": "Renders the attribute of a dictionary\nParameters:\n- name(String) The dictionary attribute name to access",
     "prefix": "|attr"
+  },
+  "b64decode": {
+    "body": [
+      "|b64decode(${1:encoding})"
+    ],
+    "description": "Decode a base 64 input into a string.\nParameters:\n- encoding(string) The string encoding charset to use.",
+    "prefix": "|b64decode"
+  },
+  "b64encode": {
+    "body": [
+      "|b64encode(${1:encoding})"
+    ],
+    "description": "Encode the string input into base 64.\nParameters:\n- encoding(string) The string encoding charset to use.",
+    "prefix": "|b64encode"
   },
   "batch": {
     "body": [
@@ -146,12 +167,40 @@
     "description": "Converts the characters &, <, >, ‘, and ” in string s to HTML-safe sequences. Use this filter if you need to display text that might contain such characters in HTML. Marks return value as markup string.",
     "prefix": "|escape"
   },
+  "escape_attr": {
+    "body": [
+      "|escape_attr"
+    ],
+    "description": "Escapes the content of an HTML attribute input",
+    "prefix": "|escape_attr"
+  },
+  "escape_html": {
+    "body": [
+      "|escape_html"
+    ],
+    "description": "Escapes the content of an HTML input",
+    "prefix": "|escape_html"
+  },
   "escape_jinjava": {
     "body": [
-      "|escape_jinjava"
+      "|escape_jinjava(${1:all_braces})"
     ],
-    "description": "Converts the characters { and } in string s to Jinjava-safe sequences. Use this filter if you need to display text that might contain such characters in Jinjava. Marks return value as markup string.",
+    "description": "Converts the characters { and } in string s to Jinjava-safe sequences. Use this filter if you need to display text that might contain such characters in Jinjava. Marks return value as markup string.\nParameters:\n- all_braces(boolean) Whether to only escape all curly braces or just when there are default expression, tag, or comment marks",
     "prefix": "|escape_jinjava"
+  },
+  "escape_js": {
+    "body": [
+      "|escape_js"
+    ],
+    "description": "Escapes the content of an string input so it can be safely inserted into JavaScript",
+    "prefix": "|escape_js"
+  },
+  "escape_url": {
+    "body": [
+      "|escape_url"
+    ],
+    "description": "Escapes the content of a URL input",
+    "prefix": "|escape_url"
   },
   "escapejs": {
     "body": [
@@ -181,6 +230,13 @@
     "description": "Return the first item of a sequence.",
     "prefix": "|first"
   },
+  "flatten": {
+    "body": [
+      "|flatten(${1:list}, ${2:depth})"
+    ],
+    "description": "Create a new list with all sub-lists recursively added to it up to the specified depth.\nParameters:\n- list(list) The original list.\n- depth(number) The depth level specifying how deep a nested list structure should be flattened. Defaults to 1. Max is 10.",
+    "prefix": "|flatten"
+  },
   "float": {
     "body": [
       "|float(${1:default})"
@@ -204,10 +260,45 @@
   },
   "format_currency": {
     "body": [
-      "|format_currency('${1:locale}', '${2:currency code}', '${3:use default decimal digits}')"
+      "|format_currency('${1:locale}', '${2:currency code}', '${3:use default decimal digits}', '${4:extend Decimal Digits To Value Precision}')"
     ],
-    "description": "Formats a given number as a currency based on the locale and currency code passed in as a parameter. \nParameters:\n- locale(String) Locale in which to format the currency. Any Java locale language tag can be passed as a parameter. The default is the page's locale.Format : ISO639LanguageCodeInLowercase-ISO3166CountryCodeInUppercase\n- currency_code(String) The ISO 4217 code of the currency. The default is the portal's default currency\n- use_default decimal digits(String) A boolean input that determines if formatter needs to use default decimal digits of the currency code. The default is false.",
+    "description": "Formats a given number as a currency based on the locale and currency code passed in as a parameter. \nParameters:\n- locale(String) Locale in which to format the currency. Any Java locale language tag can be passed as a parameter. The default is the page's locale.Format : ISO639LanguageCodeInLowercase-ISO3166CountryCodeInUppercase\n- currency_code(String) The ISO 4217 code of the currency. The default is the portal's default currency\n- use_default decimal digits(String) A boolean input that determines if formatter needs to use default decimal digits of the currency code. The default is false.\n- extend_Decimal Digits To Value Precision(String) A boolean input that determines if formatter needs to use the number of decimal digits from the given value. If the number of decimal digits from the input value is greater than the default number of decimal digits of the currency, use the number of decimal digits from the input value. Otherwise use the currency's default. The default is false.",
     "prefix": "|format_currency"
+  },
+  "format_currency_value": {
+    "body": [
+      "|format_currency_value('${1:locale}', '${2:currency}', ${3:minDecimalDigits}, ${4:maxDecimalDigits})"
+    ],
+    "description": "Formats a given number as a currency.\nParameters:\n- locale(String) The language tag for the locale to use. Defaults to the page's locale.\nFormat: ISO639LanguageCodeInLowercase-ISO3166CountryCodeInUppercase\n- currency(String) The ISO 4217 code of the currency to use. Defaults to the portal's default currency.\n- minDecimalDigits(integer) The minimum number of decimal digits to use. Defaults to the currency's default number of decimal digits.\n- maxDecimalDigits(integer) The maximum number of decimal digits to use. Defaults to the currency's default number of decimal digits.",
+    "prefix": "|format_currency_value"
+  },
+  "format_date": {
+    "body": [
+      "|format_date('${1:format}', '${2:timeZone}', '${3:locale}')"
+    ],
+    "description": "Formats the date component of a date object\nParameters:\n- format(String) The format to use. One of 'short', 'medium', 'long', 'full', or a custom pattern following Unicode LDML\nhttps://unicode.org/reports/tr35/tr35-dates.html#Date_Format_Patterns\n- timeZone(String) Time zone of the output date in IANA TZDB format\nhttps://data.iana.org/time-zones/tzdb/\n- locale(String) The locale to use for locale-aware formats",
+    "prefix": "|format_date"
+  },
+  "format_datetime": {
+    "body": [
+      "|format_datetime('${1:format}', '${2:timeZone}', '${3:locale}')"
+    ],
+    "description": "Formats both the date and time components of a date object\nParameters:\n- format(String) The format to use. One of 'short', 'medium', 'long', 'full', or a custom pattern following Unicode LDML\nhttps://unicode.org/reports/tr35/tr35-dates.html#Date_Format_Patterns\n- timeZone(String) Time zone of the output date in IANA TZDB format\nhttps://data.iana.org/time-zones/tzdb/\n- locale(String) The locale to use for locale-aware formats",
+    "prefix": "|format_datetime"
+  },
+  "format_number": {
+    "body": [
+      "|format_number('${1:locale}', ${2:max decimal precision})"
+    ],
+    "description": "Formats a given number based on the locale passed in as a parameter.\nParameters:\n- locale(String) Locale in which to format the number. The default is the page's locale.\n- max_decimal precision(number) A number input that determines the decimal precision of the formatted value. If the number of decimal digits from the input value is less than the decimal precision number, use the number of decimal digits from the input value. Otherwise, use the decimal precision number. The default is the number of decimal digits from the input value.",
+    "prefix": "|format_number"
+  },
+  "format_time": {
+    "body": [
+      "|format_time('${1:format}', '${2:timeZone}', '${3:locale}')"
+    ],
+    "description": "Formats the time component of a date object\nParameters:\n- format(String) The format to use. One of 'short', 'medium', 'long', 'full', or a custom pattern following Unicode LDML\nhttps://unicode.org/reports/tr35/tr35-dates.html#Date_Format_Patterns\n- timeZone(String) Time zone of the output date in IANA TZDB format\nhttps://data.iana.org/time-zones/tzdb/\n- locale(String) The locale to use for locale-aware formats",
+    "prefix": "|format_time"
   },
   "fromjson": {
     "body": [
@@ -367,7 +458,7 @@
     "body": [
       "|random"
     ],
-    "description": "Return a random item from the sequence.",
+    "description": "",
     "prefix": "|random"
   },
   "regex_replace": {
@@ -433,6 +524,13 @@
     "description": "Mark the value as safe, which means that in an environment with automatic escaping enabled this variable will not be escaped.",
     "prefix": "|safe"
   },
+  "sanitize_html": {
+    "body": [
+      "|sanitize_html"
+    ],
+    "description": "Sanitizes the content of an HTML input",
+    "prefix": "|sanitize_html"
+  },
   "select": {
     "body": [
       "|select(${1:exp_test})"
@@ -451,14 +549,14 @@
     "body": [
       "|shuffle"
     ],
-    "description": "Randomly shuffle a given list, returning a new list with all of the items of the original list in a random order",
+    "description": "",
     "prefix": "|shuffle"
   },
   "slice": {
     "body": [
       "|slice(${1:slices}, ${2:fillWith})"
     ],
-    "description": "Slice an iterator and return a list of lists containing those items.\nParameters:\n- slices(number) Specifies how many items will be sliced\n- fillWith(object) Specifies which object to use to fill missing values on final iteration",
+    "description": "Slice an iterator and return a list of lists containing those items.\nParameters:\n- slices(number) Specifies how many items will be sliced. Maximum value is 1000. \n- fillWith(object) Specifies which object to use to fill missing values on final iteration",
     "prefix": "|slice"
   },
   "sort": {
@@ -559,6 +657,13 @@
     "description": "Truncates a given string, respecting html markup (i.e. will properly close all nested tags)\nParameters:\n- length(number) Length at which to truncate text (HTML characters not included)\n- end(String) The characters that will be added to indicate where the text was truncated\n- breakword(boolean) If set to true, text will be truncated in the middle of words",
     "prefix": "|truncatehtml"
   },
+  "unescape_html": {
+    "body": [
+      "|unescape_html"
+    ],
+    "description": "Converts HTML entities in string s to Unicode characters.",
+    "prefix": "|unescape_html"
+  },
   "union": {
     "body": [
       "|union(${1:list})"
@@ -577,7 +682,7 @@
     "body": [
       "|unixtimestamp"
     ],
-    "description": "Gets the UNIX timestamp value (in milliseconds) of a date object",
+    "description": "",
     "prefix": "|unixtimestamp"
   },
   "upper": {
@@ -586,6 +691,13 @@
     ],
     "description": "Convert a value to uppercase",
     "prefix": "|upper"
+  },
+  "urldecode": {
+    "body": [
+      "|urldecode"
+    ],
+    "description": "Decodes encoded URL strings back to the original URL. It accepts both dictionaries and regular strings as well as pairwise iterables.",
+    "prefix": "|urldecode"
   },
   "urlencode": {
     "body": [
